@@ -1,0 +1,18 @@
+{
+  "name": "ipfs-lp",
+  "version": "0.1.0",
+  "description": "Create decentralized, full length audio albums. Powered by IPFS.",
+  "scripts": {
+    "build": "node ./scripts/build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nofungible/ipfs-lp.git"
+  },
+  "author": "noFungible",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nofungible/ipfs-lp/issues"
+  },
+  "homepage": "https://github.com/nofungible/ipfs-lp"
+}

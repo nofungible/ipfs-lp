@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <!--{{title}}-->
+  </head>
+  <body>
+    <!--
+      Native IPFS Album Tracks
+
+      Safari is unable to cycle throught multiple source tags as fallbacks, so we have
+      to attempt to load all IPFS native audio tags separately.
+
+      In the event that IPFS is not supported we then fallback to the IPFS gateway driven audio tags.
+
+      - Add an audio tag for each native IPFS track.
+        - Set its "id" attribute to "audio-track-native-#" where # is the track number, starting from zero.
+        - Set its "class" to "native-track".
+        - Set its "preload" attribute to "auto".
+      - Gather the IPFS CID for each native IPFS track in the album.
+      - Add a <source> tags for each IPFS address.
+
+      Example:
+      <audio id="audio-track-native-0" class="native-track"  preload="auto">
+        <source src="ipfs://IPFS_CID_OF_TRACK_0" type="audio/mp3">
+      </audio>
+
+      <audio id="audio-track-native-1" class="native-track"  preload="auto">
+        <source src="ipfs://IPFS_CID_OF_TRACK_1" type="audio/mp3">
+      </audio>
+    -->
+
+    <!--{{nativeTracks}}-->
+
+    <!--
+      IPFS Gateway Album Tracks
+
+      - Add an audio tag for each track.
+        - Set its "id" attribute to "audio-track-gateway-#" where # is the track number, starting from zero.
+        - Set its "class" to "gateway-track".
+        - Set its "preload" attribute to "auto".
+      - Gather the IPFS CID for each track in the album.
+      - Add <source> tags for each IPFS gateway that you want backing your track.
+        - Important note; Safari is unable to correctly cycle through fallback source tags, so put your
+          most trusted gateway first for Safari users.
+      - Important note; Cloudflare does not support streaming files, so it cannot be used for audio tracks.
+
+      Example:
+      <audio id="audio-track-gateway-0" class="gateway-track"  preload="auto">
+        <source src="https://ipfs.io/ipfs/IPFS_CID_OF_TRACK_0" type="audio/mp3">
+        <source src="https://gateway.pinata.cloud/ipfs/IPFS_CID_OF_TRACK_0" type="audio/mp3">
+      </audio>
+
+      <audio id="audio-track-gateway-1" class="gateway-track"  preload="auto">
+        <source src="https://ipfs.io/ipfs/IPFS_CID_OF_TRACK_1" type="audio/mp3">
+        <source src="https://gateway.pinata.cloud/ipfs/IPFS_CID_OF_TRACK_1" type="audio/mp3">
+      </audio>
+    -->
+
+    <!--{{gatewayTracks}}-->
+
+    <div class="table">
+      <div class="table-cell">
+        <!-- Album container -->
+        <div id="album">
+          <div class="table layer top">
+            <div class="table-cell">
+              <!--
+                Album artwork container. Actual artwork asset tag is either added
+                manually or generated from config.album.cover_cid
+              -->
+              <div id="album-artwork" class="layer bottom">
+
+                <!--{{albumCoverAsset}}-->
+
+                <!-- Album artwork loading screen -->
+                <div id="album-artwork-loading-screen">
+                    <div id="album-artwork-loading-content" class="table">
+                      <div class="table-cell">
+                        <!-- Album artwork loading error icon -->
+                        <div id="album-artwork-loading-error-icon" class="hidden">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.84 29.84">
+                            <g>
+                              <g>
+                                <polygon class="error-icon" points="29.84 25.02 19.68 14.86 29.72 4.83 25.02 0.13 14.98 10.16 4.83 0 0.13 4.7 10.28 14.86 0 25.14 4.7 29.84 14.98 19.56 25.14 29.72 29.84 25.02"/>
+                              </g>
+                            </g>
+                          </svg>
+                        </div>
+
+                        <!-- Album artwork loading spinner -->
+                        <div id="album-artwork-loading-spinner" class="loader">
+                          <svg class="circular-loader"viewBox="25 25 50 50" >
+                            <circle class="loader-path" cx="50" cy="50" r="20" fill="none" stroke-width="2" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+
+                <!-- Album artwork tint (UI backdrop) -->
+                <div id="album-artwork-tint" class="layer middle hidden"></div>
+              </div>
+
+              <!-- Player UI -->
+              <div id="ui" class="hidden">
+                <!-- Album front -->
+                <div id="front">
+                  <!-- Front header -->
+                  <div id="front-header" class="row">
+                    <div class="row">
+                      <!-- Current track metadata -->
+                      <div class="table">
+                        <div class="table-cell">
+                          <p id="current-track-text" class="text large">
+                            <span id="current-track-number"></span>
+                            <span id="current-track-name"></span>
+                          </p>
+                        </div>
+                      </div>
+
+                      <!-- Tracklist open button -->
+                      <div id="tracklist-open" class="layer top interactive">
+                        <div class="table">
+                          <div class="table-cell">
+                            <div id="tracklist-open-icon">
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35.38 33">
+                                <g>
+                                  <g>
+                                    <rect class="icon" x="14.37" y="-14.37" width="6.65" height="35.38" transform="translate(21.02 -14.37) rotate(90)"/>
+                                    <rect class="icon" x="14.37" y="-1.19" width="6.65" height="35.38" transform="translate(34.19 -1.19) rotate(90)"/>
+                                    <rect class="icon" x="14.37" y="11.98" width="6.65" height="35.38" transform="translate(47.37 11.98) rotate(90)"/>
+                                  </g>
+                                </g>
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Front Mid-Section -->
+                  <div id="front-body" class="row">
+                    <!-- Previous track button -->
+                    <div id="previous-track-button" class="button-container layer top interactive">
+                      <div class="table">
+                        <div class="table-cell">
+                          <div class="button-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.91 43.01">
+                              <g>
+                                <g>
+                                  <path class="icon" d="M5.66,21.51,42.91,0V43ZM0,40.79V2.22H5.86V40.79Z"/>
+                                </g>
+                              </g>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Track loading icon -->
+                    <div id="loading-spinner" class="button-container layer top">
+                      <div class="table">
+                        <div class="table-cell">
+                          <div class="loader">
+                            <svg class="circular-loader"viewBox="25 25 50 50" >
+                              <circle class="loader-path" cx="50" cy="50" r="20" fill="none" stroke-width="2" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Track loading error icon -->
+                    <div id="loading-error" class="button-container layer top hidden">
+                      <div class="table">
+                        <div class="table-cell">
+                          <div id="loading-error-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.84 29.84">
+                              <g>
+                                <g>
+                                  <polygon class="error-icon" points="29.84 25.02 19.68 14.86 29.72 4.83 25.02 0.13 14.98 10.16 4.83 0 0.13 4.7 10.28 14.86 0 25.14 4.7 29.84 14.98 19.56 25.14 29.72 29.84 25.02"/>
+                                </g>
+                              </g>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Play button -->
+                    <div id="play-button" class="button-container layer top interactive hidden">
+                      <div class="table">
+                        <div class="table-cell">
+                          <div class="button-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 67.36 77.78">
+                              <g>
+                                <g>
+                                  <path class="icon" d="M67.36,38.89,0,77.78H0V0H0Z"/>
+                                </g>
+                              </g>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Pause Button -->
+                    <div id="pause-button" class="button-container layer top hidden interactive">
+                      <div class="table">
+                        <div class="table-cell">
+                          <div class="button-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 78">
+                              <g>
+                                <g>
+                                  <rect class="icon" x="32" width="12" height="78"/>
+                                  <rect class="icon" width="12" height="78"/>
+                                </g>
+                              </g>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Next track button -->
+                    <div id="next-track-button" class="button-container layer top interactive">
+                      <div class="table">
+                        <div class="table-cell">
+                          <div class="button-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.91 43.01">
+                              <g>
+                                <g>
+                                  <path class="icon" d="M37.25,21.51,0,43V0ZM42.91,2.22V40.79H37V2.22Z"/>
+                                </g>
+                              </g>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Front Footer - Includes current track runtime/duration and progress bar -->
+                  <div id="front-footer" class="row">
+                    <div class="row"></div>
+
+                    <!-- Progress bar -->
+                    <div class="row">
+                      <div class="row"></div>
+                      <div class="row"></div>
+                      <div class="row">
+                        <div id="progress-bar" class="interactive">
+                          <div id="progress-bar-fill"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Track progress/length -->
+                    <div class="row">
+                      <div class="table">
+                        <div class="table-cell">
+                          <p id="track-progress-time" class="text small">
+                            <span id="track-progress"></span>&nbsp;/&nbsp;<span id="track-length"></span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Album Back -->
+                <div id="back" class="hidden">
+                  <!-- Tracklist close button -->
+                  <div id="tracklist-close" class="layer top interactive">
+                    <div class="table">
+                      <div class="table-cell">
+                        <div id="tracklist-close-icon">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.84 29.84">
+                            <g>
+                              <g>
+                                <polygon class="icon" points="29.84 25.02 19.68 14.86 29.72 4.83 25.02 0.13 14.98 10.16 4.83 0 0.13 4.7 10.28 14.86 0 25.14 4.7 29.84 14.98 19.56 25.14 29.72 29.84 25.02"/>
+                              </g>
+                            </g>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tracklist container -->
+                  <div id="tracklist">
+                    <!--{{tracklist}}-->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>
