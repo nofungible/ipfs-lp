@@ -47,6 +47,8 @@ module.exports = async function albumFactory(config) {
             copyAssets(albumDirPath)
         ]
     );
+
+    return albumDirPath;
 };
 
 async function copyAssets(albumDirPath) {
