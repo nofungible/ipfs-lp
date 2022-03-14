@@ -1,9 +1,9 @@
 {
   "name": "ipfs-lp",
-  "version": "0.1.1-alpha",
+  "version": "0.2.0-alpha",
   "description": "Create decentralized, full length audio albums. Powered by IPFS.",
   "scripts": {
-    "build": "node ./scripts/build"
+    "build": "node ./scripts/build-album"
   },
   "repository": {
     "type": "git",

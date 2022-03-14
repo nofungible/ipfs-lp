@@ -1,53 +1,63 @@
 'use strict';
 
 const fs = require('fs');
-const config = require('../config.js');
+const util = require('util');
 
-try {
+const {
+    checkExists,
+    deleteDirectory,
+    templateString,
+} = require('../utils');
+
+module.exports = async function albumFactory(config) {
     // Provide helpful errors and warnings for common formatting issues.
     validateConfig(config);
 
-    // The output directory for all albums to be placed into.
-    const outputDir = `${__dirname}/../output`;
+    const [css, html, js] = await Promise.all([
+        // Generate styles.css.
+        templateCss(config),
+        // Generate index.html.
+        templateHtml(config),
+        // Generate script.js.
+        templateJs(config),
+        // Create output directory if it doesn't exist.
+        (async () => {
+            // The output directory for all albums to be placed into.
+            const outputDirExists = await checkExists(config.outputPath); 
 
-    // Create the output gallery if it doesn't exist.
-    if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir);
-    }
+            // Create the output gallery if it doesn't exist.
+            if (!outputDirExists) {
+                await util.promisify(fs.mkdir)(config.outputPath);
+            }
+        })(),
+    ]);
 
     // The directory for the album being built. We use a timestamp prefix to keep names unique.
-    const albumDir = `${outputDir}/${Date.now()}_${config.album.title || 'album'}`;
+    const albumDirPath = `${config.outputPath}/${Date.now()}_${config.album.title || 'album'}`;
 
     // Create album directory.
-    fs.mkdirSync(albumDir);
+    await util.promisify(fs.mkdir)(albumDirPath);
 
-    // Generate index.html.
-    const html = templateHtml(config);
+    // Create files
+    await Promise.all(
+        [
+            util.promisify(fs.writeFile)(`${albumDirPath}/index.html`, html),
+            util.promisify(fs.writeFile)(`${albumDirPath}/script.js`, js),
+            util.promisify(fs.writeFile)(`${albumDirPath}/styles.css`, css),
+            copyAssets(albumDirPath)
+        ]
+    );
+};
 
-    // Create index.html.
-    fs.writeFileSync(`${albumDir}/index.html`, html);
+async function copyAssets(albumDirPath) {
+    const assetDir = `${__dirname}/../../assets`;
+    const assetDirExists = await checkExists(assetDir);
 
-    // Generate script.js.
-    const js = templateJs(config);
+    if (!assetDirExists) {
+        return false;
+    }
 
-    // Create script.js.
-    fs.writeFileSync(`${albumDir}/script.js`, js);
-
-    // Generate styles.css.
-    const css = templateCss(config);
-
-    // Create styles.css.
-    fs.writeFileSync(`${albumDir}/styles.css`, css);
-
-    // Copy all non-private files from assets/ to the album root.
-    copyAssets(albumDir);
-} catch (err) {
-    console.error(err)
-}
-
-function copyAssets(albumDir) {
-    const assetDir = `${__dirname}/../assets`;
-    const assets = fs.readdirSync(assetDir);
+    const assets = await util.promisify(fs.readdir)(assetDir);
 
     if (!assets.length) {
         return false;
@@ -57,44 +67,22 @@ function copyAssets(albumDir) {
         const asset = assets[i];
 
         if (asset.charAt(0) !== '.') {
-            fs.copyFileSync(`${assetDir}/${asset}`, `${albumDir}/${asset}`, fs.constants.COPYFILE_EXCL);
+            await util.promisify(fs.copyFile)(`${assetDir}/${asset}`, `${albumDirPath}/${asset}`, fs.constants.COPYFILE_EXCL);
         }
     }
 }
 
-function templateJs(config) {
-    const templateData = {
-        // The album config is placed into the script.js file for internal use.
-        albumConfig: `\nvar ALBUM_CONFIG = ${JSON.stringify(config.album, null, '\t')};`,
-        // Provide empty public gateway list to script.js.
-        gatewayList: '\nvar PUBLIC_GATEWAY_URLS = [];'
-    };
-
-    // Override empty gateway list with gateway list from config.js.
-    if (Array.isArray(config.ipfs.gateways)) {
-        templateData.gatewayList = `\nvar PUBLIC_GATEWAY_URLS = ${JSON.stringify(config.ipfs.gateways)};`;
-    }
-
+async function templateCss(config) {
     /**
      * Read and hydrate template.
      */
 
-    const js = fs.readFileSync(`${__dirname}/../templates/script.js`, 'utf8');
-
-    return templateString(js, templateData);
-}
-
-function templateCss(config) {
-    /**
-     * Read and hydrate template.
-     */
-
-    const css = fs.readFileSync(`${__dirname}/../templates/styles.css`, 'utf8');
+    const css = await util.promisify(fs.readFile)(`${__dirname}/../../templates/styles.css`, 'utf8');
 
     return templateString(css, {});
 }
 
-function templateHtml(config) {
+async function templateHtml(config) {
     const templateData = {
         // Cover asset HTML.
         albumCoverAsset: '',
@@ -167,20 +155,31 @@ function templateHtml(config) {
      * Read and hydrate template.
      */
 
-    const html = fs.readFileSync(`${__dirname}/../templates/index.html`, 'utf8');
+    const html = await util.promisify(fs.readFile)(`${__dirname}/../../templates/index.html`, 'utf8');
 
     return templateString(html, templateData);
 }
 
-// Hydrate simple template files via template data and tag comments.
-function templateString(str, data) {
-    // Only supports top level template parameters from template data.
-    return Object.entries(data).reduce((acc, [k, v]) => {
-        return acc
-            .replace(new RegExp(`<!--{{${k}}}-->`,'g'), v)
-            .replace(new RegExp(`//{{${k}}}`,'g'), v)
-            .replace(new RegExp(`/*{{${k}}}*/`,'g'), v);
-    }, str);
+async function templateJs(config) {
+    const templateData = {
+        // The album config is placed into the script.js file for internal use.
+        albumConfig: `\nvar ALBUM_CONFIG = ${JSON.stringify(config.album, null, '\t')};`,
+        // Provide empty public gateway list to script.js.
+        gatewayList: '\nvar PUBLIC_GATEWAY_URLS = [];'
+    };
+
+    // Override empty gateway list with gateway list from config.js.
+    if (Array.isArray(config.ipfs.gateways)) {
+        templateData.gatewayList = `\nvar PUBLIC_GATEWAY_URLS = ${JSON.stringify(config.ipfs.gateways)};`;
+    }
+
+    /**
+     * Read and hydrate template.
+     */
+
+    const js = await util.promisify(fs.readFile)(`${__dirname}/../../templates/script.js`, 'utf8');
+
+    return templateString(js, templateData);
 }
 
 // Throw errors/warnings for common formatting issues.
