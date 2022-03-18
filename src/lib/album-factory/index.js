@@ -33,7 +33,8 @@ module.exports = async function albumFactory(config) {
     ]);
 
     // The directory for the album being built. We use a timestamp prefix to keep names unique.
-    const albumDirPath = `${config.outputPath}/${Date.now()}_${config.album.title || 'album'}`;
+    const albumName = `${Date.now()}_${config.album.title || 'album'}`;
+    const albumDirPath = `${config.outputPath}/${albumName}`;
 
     // Create album directory.
     await util.promisify(fs.mkdir)(albumDirPath);
@@ -48,7 +49,7 @@ module.exports = async function albumFactory(config) {
         ]
     );
 
-    return albumDirPath;
+    return {path: albumDirPath, name: albumName};
 };
 
 async function copyAssets(albumDirPath) {
