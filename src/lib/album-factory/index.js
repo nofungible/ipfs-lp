@@ -32,9 +32,10 @@ module.exports = async function albumFactory(config) {
         })(),
     ]);
 
+    const sanitizedAlbumName = config.album.title ? config.album.title.replace(/[^a-z\d\-_\s]/gi, '').replace(/ /g, '_') : 'ipfs-lp';
+    const fileName = `${Date.now()}_${sanitizedAlbumName}`;
     // The directory for the album being built. We use a timestamp prefix to keep names unique.
-    const albumName = `${Date.now()}_${config.album.title || 'album'}`;
-    const albumDirPath = `${config.outputPath}/${albumName}`;
+    const albumDirPath = `${config.outputPath}/${fileName}`;
 
     // Create album directory.
     await util.promisify(fs.mkdir)(albumDirPath);
@@ -49,7 +50,7 @@ module.exports = async function albumFactory(config) {
         ]
     );
 
-    return {path: albumDirPath, name: albumName};
+    return {path: albumDirPath, name: fileName};
 };
 
 async function copyAssets(albumDirPath) {
@@ -150,7 +151,7 @@ async function templateHtml(config) {
         if (config.album.title) {
             templateData.title = `\n<title>${config.album.title}</title>`;
         } else {
-            templateData.title = '\n<title>IPFS LP</title>';
+            templateData.title = '\n<title>ipfs-lp</title>';
         }
     }
 
