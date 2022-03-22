@@ -169,6 +169,9 @@
 
             this.eventEmitter.emit('track-player:loaded', this.trackIndex);
         }).bind(this));
+
+        // Force load the audio tag to trigger load events.
+        this.audioTagElement.load();
     }
 
     // Get the progress of the track in seconds.
