@@ -2,10 +2,10 @@
 Create decentralized, full length audio albums. Powered by IPFS.
 
 #### Demo albums
-Cheap IDM - Lenticular Clouds (twitter: @lenticloud)
+Cheap IDM - Lenticular Clouds ([@lenticloud](https://twitter.com/lenticloud))
 - https://ipfs.io/ipfs/QmRnkP7TxbkWhrEQ2SmLkkA6uEhtmwJKKBy972jBzNgRbW
 
-Breboy - Nadir Nomad (twitter: @NadirNomad)
+Breboy - Nadir Nomad ([@NadirNomad](https://twitter.com/NadirNomad))
 - https://ipfs.io/ipfs/QmaLUmiqXC3VMx6WffU9m9eSWNuyRnEmnDYP3XUCGZp5Kf/
 
 ## General
