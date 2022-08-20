@@ -1,7 +1,7 @@
 # ipfs-lp
 Create decentralized, full length audio albums. Powered by IPFS.
 
-#### Demo album mirror links
+#### Demo albums
 Cheap IDM - Lenticular Clouds (twitter: @lenticloud)
 - https://ipfs.io/ipfs/QmRnkP7TxbkWhrEQ2SmLkkA6uEhtmwJKKBy972jBzNgRbW
 
