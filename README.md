@@ -2,12 +2,10 @@
 Create decentralized, full length audio albums. Powered by IPFS.
 
 #### Demo album mirror links
-- https://cloudflare-ipfs.com/ipfs/QmaoyZRud34pYuhWuz7rZVjDDvRoSwkZSkbVS1TVwNsuio/
-- https://gateway.pinata.cloud/ipfs/QmaoyZRud34pYuhWuz7rZVjDDvRoSwkZSkbVS1TVwNsuio/
-
-Special shoutouts to [FATTIES](https://twitter.com/FATTIES17) allowing use of their album.
-
-Please support them, and please support local music!
+Cheap IDM - Lenticular Clouds (twitter: @lenticloud)
+- https://ipfs.io/ipfs/QmRnkP7TxbkWhrEQ2SmLkkA6uEhtmwJKKBy972jBzNgRbW
+Breboy - Nadir Nomad (twitter: @NadirNomad)
+- https://ipfs.io/ipfs/QmaLUmiqXC3VMx6WffU9m9eSWNuyRnEmnDYP3XUCGZp5Kf/
 
 ## General
 ipfs-lp allows you to build a single, interactive, web-based, client utilizing multile audio resources backed by IPFS. This allows for a totally decentralized albums backed by decentralized audio resource.
@@ -84,3 +82,9 @@ Example: `1646794686190_my_album`
 You can now apply any necessary customizations.
 
 Once completed you can add the album to the IPFS network as a directory to share it with others, or utilize it as a backing resource for a token.
+
+---
+
+Special shoutouts to [FATTIES](https://twitter.com/FATTIES17) for allowing use of their album for the original demo.
+
+Please support them, and please support local music!
