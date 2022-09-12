@@ -7,7 +7,7 @@ Cheap IDM - Lenticular Clouds ([@lenticloud](https://twitter.com/lenticloud))
 - https://objkt.com/asset/KT1MJqzsK8sbCUsKwyU2QfgBny5KpRXrMiwM/19
 ##### V1 codebase
 Breboy - Nadir Nomad ([@NadirNomad](https://twitter.com/NadirNomad))
-- https://ipfs.io/ipfs/QmaLUmiqXC3VMx6WffU9m9eSWNuyRnEmnDYP3XUCGZp5Kf/
+- https://objkt.com/asset/hicetnunc/694263
 
 ## General
 ipfs-lp allows you to build a single, interactive, web-based, client utilizing multile audio resources backed by IPFS. This allows for a totally decentralized albums backed by decentralized audio resource.
